@@ -41,7 +41,7 @@ impl GameImpl of GameTrait {
         Game { game_id, player1: player, player2: player, choice1: 0, choice2: 0, seed: 12 }
     }
     #[inline(always)]
-    fn join(mut game: Game, player: ContractAddress) {
+    fn join(mut game: Game, player: ContractAddress) -> Game {
         assert(!player.is_zero(), errors::GAME_INVALID_HOST);
         let const_player = starknet::contract_address_const::<0x0>();
         if (game.player1 == const_player) {
@@ -49,15 +49,17 @@ impl GameImpl of GameTrait {
         } else {
             game.player2 = player;
         }
+        game
     }
     #[inline(always)]
-    fn choose(mut game: Game, player: ContractAddress, choice: u8) {
+    fn choose(mut game: Game, player: ContractAddress, choice: u8) -> Game {
         assert(!player.is_zero(), errors::GAME_INVALID_HOST);
         if (game.player1 == player) {
             game.choice1 = choice;
         } else {
             game.choice2 = choice;
         }
+        game
     }
 }
 
@@ -76,16 +78,16 @@ impl GameAssert of AssertTrait {
         let const_player = starknet::contract_address_const::<0x0>();
         let check1 = (self.player1 == const_player);
         let check2 = (self.player2 == const_player);
-        assert((check1 || check2), errors::GAME_NOT_FULL);
+        assert((!check1 && !check2), errors::GAME_NOT_FULL);
     }
 
     #[inline(always)]
     fn assert_can_choose(self: Game, choice: u8, player: ContractAddress) {
         if (self.player1 == player) {
-            assert(self.choice1 != 0, errors::GAME_CHOICE_DONE);
+            assert(self.choice1 == 0, errors::GAME_CHOICE_DONE);
         }
         if (self.player2 == player) {
-            assert(self.choice2 != 0, errors::GAME_CHOICE_DONE);
+            assert(self.choice2 == 0, errors::GAME_CHOICE_DONE);
         }
     }
     #[inline(always)]

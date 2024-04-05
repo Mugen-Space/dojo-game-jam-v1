@@ -97,7 +97,7 @@ mod actions {
             let caller = get_caller_address();
             let mut game = store.get_game(game_id);
             GameAssert::assert_can_join(game, player: caller);
-            GameTrait::join(game, caller);
+            game = GameTrait::join(game: game, player: caller);
             store.set_game(game);
         }
         fn send_choice(world: IWorldDispatcher, choice: u8, game_id: u32) {
@@ -107,7 +107,7 @@ mod actions {
             GameAssert::assert_valid_choice(choice);
             GameAssert::assert_can_send_choice(game);
             GameAssert::assert_can_choose(game, choice, player: caller);
-            GameTrait::choose(game, player: caller, choice: choice);
+            game = GameTrait::choose(game, player: caller, choice: choice);
             store.set_game(game)
         }
     }
