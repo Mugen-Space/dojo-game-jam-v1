@@ -5,6 +5,7 @@ import "./App.css";
 import { Direction } from "./utils";
 import { getEntityIdFromKeys } from "@dojoengine/utils";
 import { useDojo } from "./dojo/useDojo";
+import {GameComponentScreen} from "./GameComponentScreen"
 
 function App() {
     const {
@@ -14,6 +15,8 @@ function App() {
         },
         account,
     } = useDojo();
+
+    const [gameState, setGameState] = useState(0);
 
     const [clipboardStatus, setClipboardStatus] = useState({
         message: "",
@@ -100,8 +103,8 @@ function App() {
                     </p>
                 </div>
             </div>
-
-            <div className="card">
+            <GameComponentScreen gameState={1} />
+            {/* <div className="card">
                 <button onClick={() => spawn(account.account)}>Spawn</button>
                 <div>
                     Moves Left: {moves ? `${moves.remaining}` : "Need to Spawn"}
@@ -149,7 +152,7 @@ function App() {
                         Move Down
                     </button>
                 </div>
-            </div>
+            </div> */}
         </>
     );
 }
