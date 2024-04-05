@@ -106,6 +106,45 @@
         ],
         "outputs": [],
         "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "create_game",
+        "inputs": [],
+        "outputs": [
+          {
+            "type": "core::integer::u32"
+          }
+        ],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "join_game",
+        "inputs": [
+          {
+            "name": "game_id",
+            "type": "core::integer::u32"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "view"
+      },
+      {
+        "type": "function",
+        "name": "send_choice",
+        "inputs": [
+          {
+            "name": "choice",
+            "type": "core::integer::u8"
+          },
+          {
+            "name": "game_id",
+            "type": "core::integer::u32"
+          }
+        ],
+        "outputs": [],
+        "state_mutability": "view"
       }
     ]
   },

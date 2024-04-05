@@ -1,0 +1,25 @@
+kind = "DojoModel"
+class_hash = "0x11d46ce2c4f49f3c977501305827e966cc72d805b72c90d71888bc0405989c8"
+original_class_hash = "0x11d46ce2c4f49f3c977501305827e966cc72d805b72c90d71888bc0405989c8"
+abi = "manifests/dev/abis/base/models/dojo_starter_models_player_player.json"
+name = "dojo_starter::models::player::player"
+
+[[members]]
+name = "player"
+type = "ContractAddress"
+key = true
+
+[[members]]
+name = "username"
+type = "felt252"
+key = false
+
+[[members]]
+name = "balance"
+type = "u32"
+key = false
+
+[[members]]
+name = "nft_address"
+type = "ContractAddress"
+key = false

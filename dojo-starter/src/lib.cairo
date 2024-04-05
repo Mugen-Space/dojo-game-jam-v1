@@ -5,10 +5,12 @@ mod systems {
 mod models {
     mod moves;
     mod position;
-    mod games;
-    mod players;
+    mod game;
+    mod player;
 }
 
 mod tests {
     mod test_world;
 }
+
+mod store;

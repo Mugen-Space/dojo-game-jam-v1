@@ -6,9 +6,9 @@ use dojo_starter::models::position::Position;
 trait IActions {
     fn spawn();
     fn move(direction: Direction);
-    fn create_game() -> u32;
+    fn create_game();
     fn join_game(game_id: u32);
-    fn send_choice(choice: u8);
+    fn send_choice(choice: u8, game_id: u32);
 }
 
 // dojo decorator
@@ -21,7 +21,7 @@ mod actions {
     use dojo_starter::store::{Store, StoreTrait};
     use dojo_starter::models::game::{Game, GameTrait, GameAssert};
 
-    use dojo_starter::models::player::{Player, PlayerTrait};
+    use dojo_starter::models::player::{Player};
 
 
     // // declaring custom event struct
@@ -85,28 +85,30 @@ mod actions {
         // emit!(world, Moved { player, direction });
         }
 
-        fn create_game(world: IWorldDispatcher) -> u32 {
+        fn create_game(world: IWorldDispatcher) {
             let mut store: Store = StoreTrait::new(world);
             let caller = get_caller_address();
             let game_id = world.uuid();
             let mut game = GameTrait::new(game_id: game_id, host: caller);
             store.set_game(game);
-            game_id
         }
         fn join_game(world: IWorldDispatcher, game_id: u32) {
             let mut store: Store = StoreTrait::new(world);
             let caller = get_caller_address();
             let mut game = store.get_game(game_id);
-            GameAssert::assert_can_join(game: game, player: caller);
+            GameAssert::assert_can_join(game, player: caller);
             GameTrait::join(game, caller);
             store.set_game(game);
         }
-        fn send_choice(world: IWorldDispatcher, choice: u8) {
+        fn send_choice(world: IWorldDispatcher, choice: u8, game_id: u32) {
             let mut store: Store = StoreTrait::new(world);
             let caller = get_caller_address();
             let mut game = store.get_game(game_id);
             GameAssert::assert_valid_choice(choice);
-            GameAssert::assert_can_choose(game, choice, player: caller)
+            GameAssert::assert_can_send_choice(game);
+            GameAssert::assert_can_choose(game, choice, player: caller);
+            GameTrait::choose(game, player: caller, choice: choice);
+            store.set_game(game)
         }
     }
 }

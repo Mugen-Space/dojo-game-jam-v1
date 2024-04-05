@@ -1,6 +1,6 @@
 use starknet::ContractAddress;
 
-#[derive(Model, Drop, Serde)]
+#[derive(Model, Copy, Drop, Serde)]
 struct Game {
     #[key]
     game_id: u32,
@@ -38,7 +38,7 @@ impl GameImpl of GameTrait {
     fn new(game_id: u32, host: ContractAddress) -> Game {
         assert(!host.is_zero(), errors::GAME_INVALID_HOST);
         let player = starknet::contract_address_const::<0x0>();
-        Game { game_id, player1: player, player2: player, choice1: 0, choice2: 0, seed: 1 }
+        Game { game_id, player1: player, player2: player, choice1: 0, choice2: 0, seed: 12 }
     }
     #[inline(always)]
     fn join(mut game: Game, player: ContractAddress) {
@@ -49,18 +49,15 @@ impl GameImpl of GameTrait {
         } else {
             game.player2 = player;
         }
-        game
     }
     #[inline(always)]
-    fn choose(mut game: Game, player: ContractAddress) {
+    fn choose(mut game: Game, player: ContractAddress, choice: u8) {
         assert(!player.is_zero(), errors::GAME_INVALID_HOST);
-        let const_player = starknet::contract_address_const::<0x0>();
-        if (game.player1 == const_player) {
-            game.player1 = player;
+        if (game.player1 == player) {
+            game.choice1 = choice;
         } else {
-            game.player2 = player;
+            game.choice2 = choice;
         }
-        game
     }
 }
 
@@ -72,6 +69,14 @@ impl GameAssert of AssertTrait {
         let check1 = (self.player1 == const_player);
         let check2 = (self.player2 == const_player);
         assert((check1 || check2), errors::GAME_IS_FULL);
+    }
+
+    #[inline(always)]
+    fn assert_can_send_choice(self: Game) {
+        let const_player = starknet::contract_address_const::<0x0>();
+        let check1 = (self.player1 == const_player);
+        let check2 = (self.player2 == const_player);
+        assert((check1 || check2), errors::GAME_NOT_FULL);
     }
 
     #[inline(always)]

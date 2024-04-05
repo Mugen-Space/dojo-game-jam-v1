@@ -13,6 +13,7 @@ spawn = "./scripts/spawn.sh"
 [dependencies]
 dojo = { git = "https://github.com/dojoengine/dojo", tag = "v0.6.0" }
 
+
 [[target.dojo]]
 
 [tool.dojo]
