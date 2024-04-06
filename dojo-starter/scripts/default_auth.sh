@@ -20,9 +20,6 @@ sozo auth grant --world $WORLD_ADDRESS --wait writer \
   Moves,$ACTIONS_ADDRESS \
   Game,$ACTIONS_ADDRESS \
   Player,$ACTIONS_ADDRESS \
-  GameCreated,$ACTIONS_ADDRESS \
-  Gamejoined,$ACTIONS_ADDRESS \
-  GameEnded,$ACTIONS_ADDRESS \
   >/dev/null
 
 echo "Default authorizations have been successfully set."

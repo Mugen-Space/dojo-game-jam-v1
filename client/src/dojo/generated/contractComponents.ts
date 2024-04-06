@@ -96,7 +96,7 @@ export function defineContractComponents(world: World) {
         {
           metadata: {
             name: "GameCreated",
-            types: [],
+            types: ["u32", "contractaddress"],
             customTypes: [],
           },
         }

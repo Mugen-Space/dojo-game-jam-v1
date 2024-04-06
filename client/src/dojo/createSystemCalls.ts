@@ -10,6 +10,7 @@ import {
 } from "@dojoengine/utils";
 import { ContractComponents } from "./generated/contractComponents";
 import type { IWorld } from "./generated/generated";
+import { shortString } from "starknet";
 
 export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
@@ -119,15 +120,14 @@ export function createSystemCalls(
       const { transaction_hash } = await client.actions.create_game({
         account,
       });
-
-      setComponentsFromEvents(
-        contractComponents,
-        getEvents(
-          await account.waitForTransaction(transaction_hash, {
-            retryInterval: 100,
-          })
-        )
+      const result = getEvents(
+        await account.waitForTransaction(transaction_hash, {
+          retryInterval: 100,
+        })
       );
+      setComponentsFromEvents(contractComponents, result);
+
+      console.log(parseInt(result[0]["data"][2]));
     } catch (e) {
       console.log(e);
     } finally {

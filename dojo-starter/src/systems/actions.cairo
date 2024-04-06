@@ -23,7 +23,7 @@ mod actions {
 
 
     // // declaring custom event struct
-    // #[event]
+    #[event]
     #[derive(Drop, starknet::Event)]
     enum Event {
         GameCreated: GameCreated,
@@ -31,7 +31,7 @@ mod actions {
         GameEnded: GameEnded
     }
 
-    // // declaring custom event struct
+    // // // declaring custom event struct
     #[derive(starknet::Event, Model, Copy, Drop, Serde)]
     struct GameCreated {
         #[key]
@@ -45,7 +45,6 @@ mod actions {
         game_id: u32,
         player: ContractAddress
     }
-
 
     #[derive(starknet::Event, Model, Copy, Drop, Serde)]
     struct GameEnded {
@@ -112,7 +111,8 @@ mod actions {
             let mut store: Store = StoreTrait::new(world);
             let caller = get_caller_address();
             let mut game = store.get_game(game_id);
-            GameAssert::assert_can_join(game, player: caller);
+            // println!("join game, {:?}, {:?}, {:?}", caller, game.player1, game_id);
+            GameAssert::assert_can_join(ref game: game, player: caller);
             game = GameTrait::join(game: game, player: caller);
             store.set_game(game);
             emit!(world, Gamejoined { game_id, player: caller });

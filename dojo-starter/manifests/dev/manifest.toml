@@ -18,8 +18,8 @@ name = "dojo::base::base"
 [[contracts]]
 kind = "DojoContract"
 address = "0x7ec42d76c6d876b8f219c20b6a152fe35fe2afc62c471b29ba689c2f6a075b3"
-class_hash = "0xe5cbb94c3fa9cd137b5ca208877170f96819048222ce23c89ab026ae117b63"
-original_class_hash = "0xe5cbb94c3fa9cd137b5ca208877170f96819048222ce23c89ab026ae117b63"
+class_hash = "0x1b02d5d2bc7e9ee1c346ec8d1faae8bedbf719275cf072cbf4872f9a20b78af"
+original_class_hash = "0x1b02d5d2bc7e9ee1c346ec8d1faae8bedbf719275cf072cbf4872f9a20b78af"
 base_class_hash = "0x679177a2cb757694ac4f326d01052ff0963eac0bc2a17116a2b87badcdf6f76"
 abi = "abis/deployments/contracts/dojo_starter_systems_actions_actions.json"
 reads = []

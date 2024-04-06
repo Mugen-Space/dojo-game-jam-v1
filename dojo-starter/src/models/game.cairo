@@ -1,5 +1,5 @@
 use starknet::ContractAddress;
-
+use debug::print;
 #[derive(Model, Copy, Drop, Serde)]
 struct Game {
     #[key]
@@ -37,13 +37,13 @@ impl GameImpl of GameTrait {
     #[inline(always)]
     fn new(game_id: u32, host: ContractAddress) -> Game {
         assert(!host.is_zero(), errors::GAME_INVALID_HOST);
-        let player = starknet::contract_address_const::<0x0>();
+        let player = starknet::contract_address_const::<'const_player'>();
         Game { game_id, player1: player, player2: player, choice1: 0, choice2: 0, seed: 1 }
     }
     #[inline(always)]
     fn join(mut game: Game, player: ContractAddress) -> Game {
         assert(!player.is_zero(), errors::GAME_INVALID_HOST);
-        let const_player = starknet::contract_address_const::<0x0>();
+        let const_player = starknet::contract_address_const::<'const_player'>();
         if (game.player1 == const_player) {
             game.player1 = player;
         } else {
@@ -66,16 +66,18 @@ impl GameImpl of GameTrait {
 #[generate_trait]
 impl GameAssert of AssertTrait {
     #[inline(always)]
-    fn assert_can_join(self: Game, player: ContractAddress) {
-        let const_player = starknet::contract_address_const::<0x0>();
-        let check1 = (self.player1 == const_player);
-        let check2 = (self.player2 == const_player);
+    fn assert_can_join(ref game: Game, player: ContractAddress) {
+        assert(!player.is_zero(), errors::GAME_INVALID_HOST);
+        let const_player = starknet::contract_address_const::<'const_player'>();
+        let check1 = (game.player1 == const_player);
+        let check2 = (game.player2 == const_player);
+        // println!("Hello, {:?}, {:?}", check1, game.player1);
         assert((check1 || check2), errors::GAME_IS_FULL);
     }
 
     #[inline(always)]
     fn assert_can_send_choice(self: Game) {
-        let const_player = starknet::contract_address_const::<0x0>();
+        let const_player = starknet::contract_address_const::<'const_player'>();
         let check1 = (self.player1 == const_player);
         let check2 = (self.player2 == const_player);
         assert((!check1 && !check2), errors::GAME_NOT_FULL);
@@ -83,6 +85,7 @@ impl GameAssert of AssertTrait {
 
     #[inline(always)]
     fn assert_can_choose(self: Game, choice: u8, player: ContractAddress) {
+        assert(!player.is_zero(), errors::GAME_INVALID_HOST);
         if (self.player1 == player) {
             assert(self.choice1 == 0, errors::GAME_CHOICE_DONE);
         }
