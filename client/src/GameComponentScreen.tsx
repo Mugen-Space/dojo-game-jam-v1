@@ -219,7 +219,9 @@ function GameComponentScreen(props: GameComponentScreenProps) {
   }
 
   useEffect(() => {
-    setBackgroundImage(`../src/assets/${GameState[gameState]}.png`);
+    setBackgroundImage(
+      `https://raw.githubusercontent.com/Mugen-Space/dojo-game-jam-v1/main/client/src/assets/${GameState[gameState]}.png`
+    );
     setGameComponents(gameState);
   }, [gameState]);
 
