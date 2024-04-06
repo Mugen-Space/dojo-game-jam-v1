@@ -9,6 +9,7 @@ import GameComponentScreen from "./GameComponentScreen";
 import { GameState } from "./GameStateEnum";
 import { useEntityQuery } from "@dojoengine/react";
 import { HasValue, getComponentValue } from "@dojoengine/recs";
+import { useGameStore } from "./Store";
 
 function App() {
   const {
@@ -19,8 +20,13 @@ function App() {
     account,
   } = useDojo();
 
-  const [gameState, setGameState] = useState<GameState>(GameState.Welcome);
-  const [gameId, setGameId] = useState(0);
+  const gameState = useGameStore((state) => state.gameState)
+  const setGameState = useGameStore((state) => state.updateGameState)
+  // const [gameState, setGameState] = useState<GameState>(GameState.Welcome);
+  const gameId = useGameStore((state) => state.gameId)
+  const updateGameId = useGameStore((state) => state.updateGameId)
+  //const [gameId, setGameId] = useState(0);
+  
 
   const [clipboardStatus, setClipboardStatus] = useState({
     message: "",
@@ -121,16 +127,25 @@ function App() {
         </div>
       </div>
       <GameComponentScreen
-        gameState={gameState}
+        gameId={gameId}
         startGame={() => setGameState(GameState.StartOrCreate)}
         createGame={() => create_game(account?.account)}
         joinGame={(game_id) => {
-          join_game(account?.account, game_id);
-          setGameId(game_id);
-          setGameState(GameState.Interrogation);
+          console.log("Game Id", game_id)
+          try {
+            updateGameId(game_id)
+            join_game(account?.account, game_id);
+            setGameState(GameState.Interrogation);
+          } catch (err) {
+            alert(err)
+          }
         }}
         vote={(choice) => {
-          send_choice(account?.account, choice, gameId);
+          try {
+            send_choice(account?.account, choice, gameId);
+          } catch (err) {
+            alert(err)
+          }
         }}
         goToCredits={() => console.log("Hello")}
         resetGame={() => console.log("Hello")}
