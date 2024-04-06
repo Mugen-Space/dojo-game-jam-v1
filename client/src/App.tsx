@@ -6,6 +6,8 @@ import { Direction } from "./utils";
 import { getEntityIdFromKeys } from "@dojoengine/utils";
 import { useDojo } from "./dojo/useDojo";
 import GameComponentScreen from "./GameComponentScreen";
+import { GameState } from "./GameStateEnum";
+
 function App() {
   const {
     setup: {
@@ -15,7 +17,7 @@ function App() {
     account,
   } = useDojo();
 
-  const [gameState, setGameState] = useState(0);
+  const [gameState, setGameState] = useState<GameState>(GameState.Welcome);
 
   const [clipboardStatus, setClipboardStatus] = useState({
     message: "",
@@ -101,7 +103,7 @@ function App() {
         </div>
       </div>
       <GameComponentScreen
-        gameState={2}
+        gameState={GameState.Welcome}
         startGame={() => console.log("Hello")}
         createGame={() => console.log("Hello")}
         joinGame={() => console.log("Hello")}
