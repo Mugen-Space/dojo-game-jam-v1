@@ -18,6 +18,37 @@
     filter: drop-shadow(0 0 2em #61dafbaa);
 }
 
+.controller-container {
+    display: flex;
+    flex-direction: row; /* or column, depending on layout */
+    justify-content: center; /* Aligns items on the main-axis */
+    align-items: center; /* Aligns items on the cross-axis */
+}
+
+.controller-column {
+    display: flex;
+    flex-direction: column; /* or column, depending on layout */
+    justify-content: center; /* Aligns items on the main-axis */
+    align-items: center; /* Aligns items on the cross-axis */
+}
+
+.form-field {
+    display: flex; /* Establishes a flex container */
+    align-items: center; /* Vertically centers the children (label and input) */
+    margin-bottom: 10px; /* Adds some space below each form field */
+}
+
+.label {
+    margin-right: 10px; /* Adds space between the label and the input */
+    white-space: nowrap; /* Prevents the label from wrapping */
+}
+
+.input {
+    flex-grow: 1; /* Allows the input to take up any remaining space */
+    margin: 5px 0; /* Adds a little vertical space for aesthetics */
+}
+
+
 @keyframes logo-spin {
     from {
         transform: rotate(0deg);
