@@ -1,0 +1,15 @@
+kind = "DojoModel"
+class_hash = "0x14d86400b3849a7293a9321a577b68c9966152b932dc5804fb6ae4c6778dbf8"
+original_class_hash = "0x14d86400b3849a7293a9321a577b68c9966152b932dc5804fb6ae4c6778dbf8"
+abi = "manifests/dev/abis/base/models/dojo_starter_systems_actions_actions_game_ended.json"
+name = "dojo_starter::systems::actions::actions::game_ended"
+
+[[members]]
+name = "game_id"
+type = "u32"
+key = true
+
+[[members]]
+name = "seed"
+type = "u32"
+key = false

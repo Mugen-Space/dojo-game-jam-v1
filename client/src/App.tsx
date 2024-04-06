@@ -1,23 +1,26 @@
 import { useComponentValue } from "@dojoengine/react";
 import { Entity } from "@dojoengine/recs";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "./App.css";
 import { Direction } from "./utils";
 import { getEntityIdFromKeys } from "@dojoengine/utils";
 import { useDojo } from "./dojo/useDojo";
 import GameComponentScreen from "./GameComponentScreen";
 import { GameState } from "./GameStateEnum";
+import { useEntityQuery } from "@dojoengine/react";
+import { HasValue, getComponentValue } from "@dojoengine/recs";
 
 function App() {
   const {
     setup: {
-      systemCalls: { spawn, move },
-      clientComponents: { Position, Moves },
+      systemCalls: { spawn, move, create_game, join_game, send_choice },
+      clientComponents: { Position, Moves, GameCreated },
     },
     account,
   } = useDojo();
 
   const [gameState, setGameState] = useState<GameState>(GameState.Welcome);
+  const [gameId, setGameId] = useState(0);
 
   const [clipboardStatus, setClipboardStatus] = useState({
     message: "",
@@ -28,6 +31,21 @@ function App() {
   const entityId = getEntityIdFromKeys([
     BigInt(account?.account.address),
   ]) as Entity;
+
+  const gameEntities: any = useEntityQuery([
+    HasValue(GameCreated, {
+      owner: BigInt(account.account.address),
+    }),
+  ]);
+  const games = useMemo(
+    () =>
+      gameEntities
+        .map((id: any) => getComponentValue(GameCreated, id))
+        .sort((a: any, b: any) => a.id - b.id)
+        .filter((game: any) => game.host !== 0n),
+    [gameEntities, GameCreated]
+  );
+  console.log(games);
 
   // get current component values
   const position = useComponentValue(Position, entityId);
@@ -103,11 +121,17 @@ function App() {
         </div>
       </div>
       <GameComponentScreen
-        gameState={GameState.Welcome}
-        startGame={() => console.log("Hello")}
-        createGame={() => console.log("Hello")}
-        joinGame={() => console.log("Hello")}
-        vote={() => console.log("Hello")}
+        gameState={gameState}
+        startGame={() => setGameState(GameState.StartOrCreate)}
+        createGame={() => create_game(account?.account)}
+        joinGame={(game_id) => {
+          join_game(account?.account, game_id);
+          setGameId(game_id);
+          setGameState(GameState.Interrogation);
+        }}
+        vote={(choice) => {
+          send_choice(account?.account, choice, gameId);
+        }}
         goToCredits={() => console.log("Hello")}
         resetGame={() => console.log("Hello")}
       />

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import { useDojo } from "./dojo/useDojo";
+import { Account, AccountInterface } from "starknet";
+
 import {
   StartOrCreateMessage,
   WelcomeMessage,
@@ -16,8 +18,8 @@ type GameComponentScreenProps = {
   gameState: GameState;
   startGame: () => void;
   createGame: () => void;
-  joinGame: () => void;
-  vote: (arg0: string) => void;
+  joinGame: (game_id: number) => void;
+  vote: (arg0: number) => void;
   goToCredits: () => void;
   resetGame: () => void;
 };
@@ -33,22 +35,26 @@ function WelcomeComponents(props: GameComponentScreenProps) {
 }
 
 function StartOrCreateComponents(props: GameComponentScreenProps) {
+  //   const [gameID, setGameID] = useState(0);
   return (
     <>
       <div className="controller-column">
-        <div className="form-field">
+        {/* <div className="form-field">
           <label className="label" htmlFor="name">
-            Enter your name:{" "}
+            Enter your id:{" "}
           </label>
           <input
             placeholder="Please enter your name"
             id="name"
             className="input"
+            inputMode="decimal"
+            value={gameID}
+            onChange={(e) => setGameID(parseInt(e.target.value))}
           />
-        </div>
+        </div> */}
         <div className="controller-container">
           <button onClick={() => props.createGame()}>Create Game</button>
-          <button onClick={() => props.joinGame()}>Join Game</button>
+          <button onClick={() => props.joinGame(0)}>Join Game</button>
         </div>
       </div>
     </>
@@ -59,8 +65,8 @@ function InterrogationComponent(props: GameComponentScreenProps) {
   return (
     <>
       <div className="controller-container">
-        <button onClick={() => props.vote("Split")}>Vote Split</button>
-        <button onClick={() => props.vote("Steal")}>Vote Steal</button>
+        <button onClick={() => props.vote(1)}>Vote Split</button>
+        <button onClick={() => props.vote(2)}>Vote Steal</button>
       </div>
     </>
   );

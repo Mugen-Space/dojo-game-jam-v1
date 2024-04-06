@@ -1,0 +1,15 @@
+kind = "DojoModel"
+class_hash = "0x7f1cb1393c3033ed3bb4c3244d440b9ae8b23b4b95becc39b0a0ce7cab31913"
+original_class_hash = "0x7f1cb1393c3033ed3bb4c3244d440b9ae8b23b4b95becc39b0a0ce7cab31913"
+abi = "manifests/dev/abis/base/models/dojo_starter_systems_actions_actions_game_created.json"
+name = "dojo_starter::systems::actions::actions::game_created"
+
+[[members]]
+name = "game_id"
+type = "u32"
+key = true
+
+[[members]]
+name = "owner"
+type = "ContractAddress"
+key = false

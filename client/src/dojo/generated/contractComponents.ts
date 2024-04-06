@@ -79,8 +79,56 @@ export function defineContractComponents(world: World) {
         },
         {
           metadata: {
-            name: "Game",
+            name: "Player",
             types: ["contractaddress", "felt252", "u32", "contractaddress"],
+            customTypes: [],
+          },
+        }
+      );
+    })(),
+    GameCreated: (() => {
+      return defineComponent(
+        world,
+        {
+          game_id: RecsType.Number,
+          owner: RecsType.BigInt,
+        },
+        {
+          metadata: {
+            name: "GameCreated",
+            types: [],
+            customTypes: [],
+          },
+        }
+      );
+    })(),
+    Gamejoined: (() => {
+      return defineComponent(
+        world,
+        {
+          game_id: RecsType.Number,
+          player: RecsType.BigInt,
+        },
+        {
+          metadata: {
+            name: "Gamejoined",
+            types: ["u32", "contractaddress"],
+            customTypes: [],
+          },
+        }
+      );
+    })(),
+    GameEnded: (() => {
+      return defineComponent(
+        world,
+        {
+          game_id: RecsType.Number,
+          seed: RecsType.Number,
+        },
+        {
+          metadata: {
+            name: "GameEnded",
+            types: ["u32", "u32"],
             customTypes: [],
           },
         }
