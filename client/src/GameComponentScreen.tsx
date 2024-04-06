@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import "./App.css";
 import { useDojo } from "./dojo/useDojo";
 import { Account, AccountInterface } from "starknet";
+import { useGameStore } from "./Store";
 
 import {
   StartOrCreateMessage,
@@ -13,18 +14,19 @@ import {
   CreditsMessage,
 } from "./Constants";
 import { GameState } from "./GameStateEnum";
+import { stat } from "fs";
 // import gameimage from
 type GameComponentScreenProps = {
-  gameState: GameState;
+  gameId: number;
   startGame: () => void;
   createGame: () => void;
-  joinGame: (game_id: number) => void;
+  joinGame: (gameId: number) => void;
   vote: (arg0: number) => void;
   goToCredits: () => void;
   resetGame: () => void;
 };
 
-function WelcomeComponents(props: GameComponentScreenProps) {
+function WelcomeComponents(props: {startGame: GameComponentScreenProps['startGame']}) {
   return (
     <>
       <div className="controller-container">
@@ -34,34 +36,38 @@ function WelcomeComponents(props: GameComponentScreenProps) {
   );
 }
 
-function StartOrCreateComponents(props: GameComponentScreenProps) {
-  //   const [gameID, setGameID] = useState(0);
+function StartOrCreateComponents(props: {gameId: GameComponentScreenProps['gameId'], createGame: GameComponentScreenProps['createGame'], joinGame: GameComponentScreenProps['joinGame']}) {
+    const [gameID, setGameID] = useState(`${props.gameId}`);
+    const gameId = useGameStore((state) => state.gameId)
   return (
     <>
       <div className="controller-column">
-        {/* <div className="form-field">
+        <div className="form-field">
           <label className="label" htmlFor="name">
-            Enter your id:{" "}
+            Enter Game Id:{" "}
           </label>
           <input
-            placeholder="Please enter your name"
+            placeholder="Please enter Game Id"
             id="name"
             className="input"
-            inputMode="decimal"
             value={gameID}
-            onChange={(e) => setGameID(parseInt(e.target.value))}
+            onEmptied={() => setGameID("0")}
+            onChange={(e) => {
+                setGameID(e.target.value)
+              }
+            }
           />
-        </div> */}
+        </div>
         <div className="controller-container">
           <button onClick={() => props.createGame()}>Create Game</button>
-          <button onClick={() => props.joinGame(0)}>Join Game</button>
+          <button onClick={() => props.joinGame(parseInt(gameID))}>Join Game: {gameID}</button>
         </div>
       </div>
     </>
   );
 }
 
-function InterrogationComponent(props: GameComponentScreenProps) {
+function InterrogationComponent(props: {vote: GameComponentScreenProps['vote']}) {
   return (
     <>
       <div className="controller-container">
@@ -72,7 +78,7 @@ function InterrogationComponent(props: GameComponentScreenProps) {
   );
 }
 
-function GoToCredits(props: GameComponentScreenProps) {
+function GoToCredits(props: {goToCredits: GameComponentScreenProps['goToCredits']}) {
   return (
     <>
       <div className="controller-container">
@@ -82,7 +88,7 @@ function GoToCredits(props: GameComponentScreenProps) {
   );
 }
 
-function CreditsComponent(props: GameComponentScreenProps) {
+function CreditsComponent(props: {resetGame: GameComponentScreenProps['resetGame']}) {
   return (
     <>
       <div className="controller-container">
@@ -98,45 +104,45 @@ function GameComponentScreen(props: GameComponentScreenProps) {
   );
   const [gameText, setGameText] = useState(WelcomeMessage);
   const [gameControls, setGameControls] = useState(<></>);
-  const [gameState, setGameState] = useState(0);
-
+  const gameState = useGameStore(state => state.gameState)
+  
   function setGameComponents(gameState: GameState) {
     switch (gameState) {
       case GameState.Welcome:
-        setGameControls(WelcomeComponents(props));
+        setGameControls(<WelcomeComponents startGame={props.startGame} />);
         setGameText(WelcomeMessage);
         break;
       case GameState.StartOrCreate:
-        setGameControls(StartOrCreateComponents(props));
+        setGameControls(<StartOrCreateComponents gameId={props.gameId} createGame={props.createGame} joinGame={props.joinGame} />);
         setGameText(StartOrCreateMessage);
         break;
       case GameState.Interrogation:
         setGameText(InterrogationMessage);
-        setGameControls(InterrogationComponent(props));
+        setGameControls(<InterrogationComponent vote={props.vote}/>);
         break;
       case GameState.Cooperate:
         setGameText(CooperateMessage);
-        setGameControls(GoToCredits(props));
+        setGameControls(<GoToCredits goToCredits={props.goToCredits} />);
         break;
       case GameState.Betrayal:
         setGameText(BetrayalMessage);
-        setGameControls(GoToCredits(props));
+        setGameControls(<GoToCredits goToCredits={props.goToCredits} />);
         break;
       case GameState.SingleBetrayal:
         setGameText(SingleBetrayalMessage);
-        setGameControls(GoToCredits(props));
+        setGameControls(<GoToCredits goToCredits={props.goToCredits} />);
         break;
       case GameState.Credits:
         setGameText(CreditsMessage);
-        setGameControls(CreditsComponent(props));
+        setGameControls(<CreditsComponent resetGame={props.resetGame} />);
         break;
     }
   }
 
   useEffect(() => {
-    setBackgroundImage(`../src/assets/${GameState[props.gameState]}.png`);
-    setGameComponents(props.gameState);
-  }, [props.gameState]);
+    setBackgroundImage(`../src/assets/${GameState[gameState]}.png`);
+    setGameComponents(gameState);
+  }, [gameState]);
 
   return (
     <>
