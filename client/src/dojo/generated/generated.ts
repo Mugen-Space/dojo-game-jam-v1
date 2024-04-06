@@ -7,41 +7,85 @@ import { Direction } from "../../utils";
 export type IWorld = Awaited<ReturnType<typeof setupWorld>>;
 
 export interface MoveProps {
-    account: Account | AccountInterface;
-    direction: Direction;
+  account: Account | AccountInterface;
+  direction: Direction;
+}
+
+export interface joinGameProps {
+  account: Account | AccountInterface;
+  game_id: number;
+}
+
+export interface sendChoiceProps {
+  account: Account | AccountInterface;
+  choice: number;
+  game_id: number;
 }
 
 export async function setupWorld(provider: DojoProvider) {
-    function actions() {
-        const contract_name = "actions";
+  function actions() {
+    const contract_name = "actions";
 
-        const spawn = async ({ account }: { account: AccountInterface }) => {
-            try {
-                return await provider.execute(
-                    account,
-                    contract_name,
-                    "spawn",
-                    []
-                );
-            } catch (error) {
-                console.error("Error executing spawn:", error);
-                throw error;
-            }
-        };
-
-        const move = async ({ account, direction }: MoveProps) => {
-            try {
-                return await provider.execute(account, contract_name, "move", [
-                    direction,
-                ]);
-            } catch (error) {
-                console.error("Error executing move:", error);
-                throw error;
-            }
-        };
-        return { spawn, move };
-    }
-    return {
-        actions: actions(),
+    const spawn = async ({ account }: { account: AccountInterface }) => {
+      try {
+        return await provider.execute(account, contract_name, "spawn", []);
+      } catch (error) {
+        console.error("Error executing spawn:", error);
+        throw error;
+      }
     };
+
+    const create_game = async ({ account }: { account: AccountInterface }) => {
+      try {
+        return await provider.execute(
+          account,
+          contract_name,
+          "create_game",
+          []
+        );
+      } catch (error) {
+        console.error("Error executing move:", error);
+        throw error;
+      }
+    };
+    const join_game = async ({ account, game_id }: joinGameProps) => {
+      try {
+        return await provider.execute(account, contract_name, "join_game", [
+          game_id,
+        ]);
+      } catch (error) {
+        console.error("Error executing move:", error);
+        throw error;
+      }
+    };
+    const send_choice = async ({
+      account,
+      choice,
+      game_id,
+    }: sendChoiceProps) => {
+      try {
+        return await provider.execute(account, contract_name, "send_choice", [
+          choice,
+          game_id,
+        ]);
+      } catch (error) {
+        console.error("Error executing move:", error);
+        throw error;
+      }
+    };
+    const move = async ({ account, direction }: MoveProps) => {
+      try {
+        return await provider.execute(account, contract_name, "move", [
+          direction,
+        ]);
+      } catch (error) {
+        console.error("Error executing move:", error);
+        throw error;
+      }
+    };
+    return { spawn, move, create_game, join_game, send_choice };
+  }
+  return {
+    actions: actions(),
+  };
 }
