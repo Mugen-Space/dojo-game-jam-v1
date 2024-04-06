@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "./App.css";
 import { useDojo } from "./dojo/useDojo";
 import { Account, AccountInterface } from "starknet";
 import { useGameStore } from "./Store";
-
+import { useEntityQuery } from "@dojoengine/react";
+import { HasValue, getComponentValue } from "@dojoengine/recs";
 import {
   StartOrCreateMessage,
   WelcomeMessage,
@@ -26,7 +27,9 @@ type GameComponentScreenProps = {
   resetGame: () => void;
 };
 
-function WelcomeComponents(props: {startGame: GameComponentScreenProps['startGame']}) {
+function WelcomeComponents(props: {
+  startGame: GameComponentScreenProps["startGame"];
+}) {
   return (
     <>
       <div className="controller-container">
@@ -36,9 +39,14 @@ function WelcomeComponents(props: {startGame: GameComponentScreenProps['startGam
   );
 }
 
-function StartOrCreateComponents(props: {gameId: GameComponentScreenProps['gameId'], createGame: GameComponentScreenProps['createGame'], joinGame: GameComponentScreenProps['joinGame']}) {
-    const [gameID, setGameID] = useState(`${props.gameId}`);
-    const gameId = useGameStore((state) => state.gameId)
+function StartOrCreateComponents(props: {
+  gameId: GameComponentScreenProps["gameId"];
+  createGame: GameComponentScreenProps["createGame"];
+  joinGame: GameComponentScreenProps["joinGame"];
+}) {
+  const [gameID, setGameID] = useState(`${props.gameId}`);
+  const gameId = useGameStore((state) => state.gameId);
+  const setGameId = useGameStore((state) => state.updateGameId);
   return (
     <>
       <div className="controller-column">
@@ -50,24 +58,63 @@ function StartOrCreateComponents(props: {gameId: GameComponentScreenProps['gameI
             placeholder="Please enter Game Id"
             id="name"
             className="input"
-            value={gameID}
-            onEmptied={() => setGameID("0")}
+            value={gameId}
+            onEmptied={() => setGameId(0)}
             onChange={(e) => {
-                setGameID(e.target.value)
-              }
-            }
+              setGameId(parseInt(e.target.value == "" ? "0" : e.target.value));
+              setGameID(e.target.value);
+            }}
           />
         </div>
         <div className="controller-container">
           <button onClick={() => props.createGame()}>Create Game</button>
-          <button onClick={() => props.joinGame(parseInt(gameID))}>Join Game: {gameID}</button>
+          <button onClick={() => props.joinGame(gameId)}>
+            Join Game: {gameId}
+          </button>
         </div>
       </div>
     </>
   );
 }
 
-function InterrogationComponent(props: {vote: GameComponentScreenProps['vote']}) {
+function InterrogationComponent(props: {
+  game_id: GameComponentScreenProps["gameId"];
+  vote: GameComponentScreenProps["vote"];
+}) {
+  const {
+    setup: {
+      systemCalls: { spawn, move, create_game, join_game, send_choice },
+      clientComponents: { Position, Moves, Game },
+    },
+    account,
+  } = useDojo();
+  const setGameState = useGameStore((state) => state.updateGameState);
+  const gameEntities: any = useEntityQuery([
+    HasValue(Game, {
+      game_id: props.game_id,
+    }),
+  ]);
+  const games = useMemo(
+    () =>
+      gameEntities
+        .map((id: any) => getComponentValue(Game, id))
+        .sort((a: any, b: any) => a.id - b.id)
+        .filter((game: any) => game.game_id !== 0n),
+    [gameEntities, Game]
+  );
+  console.log(games);
+  if (games[0]["choice1"] !== 0 && games[0]["choice2"] !== 0) {
+    console.log("results are here for the round");
+    if (games[0]["choice1"] === 1 && games[0]["choice2"] === 1) {
+      setGameState(GameState.Cooperate);
+    } else if (games[0]["choice1"] === 1 && games[0]["choice2"] === 2) {
+      setGameState(GameState.SingleBetrayal);
+    } else if (games[0]["choice1"] === 2 && games[0]["choice2"] === 1) {
+      setGameState(GameState.SingleBetrayal);
+    } else {
+      setGameState(GameState.Betrayal);
+    }
+  }
   return (
     <>
       <div className="controller-container">
@@ -78,7 +125,9 @@ function InterrogationComponent(props: {vote: GameComponentScreenProps['vote']})
   );
 }
 
-function GoToCredits(props: {goToCredits: GameComponentScreenProps['goToCredits']}) {
+function GoToCredits(props: {
+  goToCredits: GameComponentScreenProps["goToCredits"];
+}) {
   return (
     <>
       <div className="controller-container">
@@ -88,7 +137,9 @@ function GoToCredits(props: {goToCredits: GameComponentScreenProps['goToCredits'
   );
 }
 
-function CreditsComponent(props: {resetGame: GameComponentScreenProps['resetGame']}) {
+function CreditsComponent(props: {
+  resetGame: GameComponentScreenProps["resetGame"];
+}) {
   return (
     <>
       <div className="controller-container">
@@ -104,8 +155,8 @@ function GameComponentScreen(props: GameComponentScreenProps) {
   );
   const [gameText, setGameText] = useState(WelcomeMessage);
   const [gameControls, setGameControls] = useState(<></>);
-  const gameState = useGameStore(state => state.gameState)
-  
+  const gameState = useGameStore((state) => state.gameState);
+
   function setGameComponents(gameState: GameState) {
     switch (gameState) {
       case GameState.Welcome:
@@ -113,12 +164,20 @@ function GameComponentScreen(props: GameComponentScreenProps) {
         setGameText(WelcomeMessage);
         break;
       case GameState.StartOrCreate:
-        setGameControls(<StartOrCreateComponents gameId={props.gameId} createGame={props.createGame} joinGame={props.joinGame} />);
+        setGameControls(
+          <StartOrCreateComponents
+            gameId={props.gameId}
+            createGame={props.createGame}
+            joinGame={props.joinGame}
+          />
+        );
         setGameText(StartOrCreateMessage);
         break;
       case GameState.Interrogation:
         setGameText(InterrogationMessage);
-        setGameControls(<InterrogationComponent vote={props.vote}/>);
+        setGameControls(
+          <InterrogationComponent vote={props.vote} game_id={props.gameId} />
+        );
         break;
       case GameState.Cooperate:
         setGameText(CooperateMessage);

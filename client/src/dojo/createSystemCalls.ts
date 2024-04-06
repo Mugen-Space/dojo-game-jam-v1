@@ -10,7 +10,6 @@ import {
 } from "@dojoengine/utils";
 import { ContractComponents } from "./generated/contractComponents";
 import type { IWorld } from "./generated/generated";
-import { shortString } from "starknet";
 
 export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
@@ -127,7 +126,7 @@ export function createSystemCalls(
       );
       setComponentsFromEvents(contractComponents, result);
 
-      console.log(parseInt(result[0]["data"][2]));
+      return parseInt(result[0]["data"][2]);
     } catch (e) {
       console.log(e);
     } finally {
@@ -140,15 +139,19 @@ export function createSystemCalls(
         account,
         game_id,
       });
-
-      setComponentsFromEvents(
-        contractComponents,
-        getEvents(
-          await account.waitForTransaction(transaction_hash, {
-            retryInterval: 100,
-          })
-        )
+      const result = getEvents(
+        await account.waitForTransaction(transaction_hash, {
+          retryInterval: 100,
+        })
       );
+      setComponentsFromEvents(contractComponents, result);
+      let address1 = result[0]["data"][4];
+      let address2 = result[0]["data"][5];
+      //   account.address;
+      console.log(address1, address2, account.address);
+      if (address1 == account.address || address2 == account.address)
+        return true;
+      return false;
     } catch (e) {
       console.log(e);
     } finally {

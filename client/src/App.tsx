@@ -20,13 +20,12 @@ function App() {
     account,
   } = useDojo();
 
-  const gameState = useGameStore((state) => state.gameState)
-  const setGameState = useGameStore((state) => state.updateGameState)
+  const gameState = useGameStore((state) => state.gameState);
+  const setGameState = useGameStore((state) => state.updateGameState);
   // const [gameState, setGameState] = useState<GameState>(GameState.Welcome);
-  const gameId = useGameStore((state) => state.gameId)
-  const updateGameId = useGameStore((state) => state.updateGameId)
+  const gameId = useGameStore((state) => state.gameId);
+  const updateGameId = useGameStore((state) => state.updateGameId);
   //const [gameId, setGameId] = useState(0);
-  
 
   const [clipboardStatus, setClipboardStatus] = useState({
     message: "",
@@ -69,6 +68,15 @@ function App() {
         message: `Failed to restore burners from clipboard`,
         isError: true,
       });
+    }
+  };
+
+  const handleCreateGame = async () => {
+    let game_id = await create_game(account?.account);
+    if (game_id) {
+      updateGameId(game_id);
+    } else {
+      console.error("error while creating the game");
     }
   };
 
@@ -129,26 +137,27 @@ function App() {
       <GameComponentScreen
         gameId={gameId}
         startGame={() => setGameState(GameState.StartOrCreate)}
-        createGame={() => create_game(account?.account)}
-        joinGame={(game_id) => {
-          console.log("Game Id", game_id)
+        createGame={handleCreateGame}
+        joinGame={async (game_id) => {
+          console.log("Game Id", game_id);
           try {
-            updateGameId(game_id)
-            join_game(account?.account, game_id);
-            setGameState(GameState.Interrogation);
+            updateGameId(game_id);
+            let success = await join_game(account?.account, game_id);
+            if (success === true) setGameState(GameState.Interrogation);
+            else throw "Could not join game";
           } catch (err) {
-            alert(err)
+            alert(err);
           }
         }}
         vote={(choice) => {
           try {
             send_choice(account?.account, choice, gameId);
           } catch (err) {
-            alert(err)
+            alert(err);
           }
         }}
-        goToCredits={() => console.log("Hello")}
-        resetGame={() => console.log("Hello")}
+        goToCredits={() => setGameState(GameState.Credits)}
+        resetGame={() => setGameState(GameState.Welcome)}
       />
       {/* <div className="card">
                 <button onClick={() => spawn(account.account)}>Spawn</button>
