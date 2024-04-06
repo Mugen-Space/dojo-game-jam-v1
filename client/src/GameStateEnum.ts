@@ -1,4 +1,4 @@
-const enum GameState {
+export enum GameState {
     Welcome,
     StartOrCreate,
     Interrogation,
@@ -8,4 +8,4 @@ const enum GameState {
     Credits
 }
 
-export GameState;
+// export GameState;

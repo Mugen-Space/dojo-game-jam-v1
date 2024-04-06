@@ -107,6 +107,9 @@ function App() {
         startGame={() => console.log("Hello")}
         createGame={() => console.log("Hello")}
         joinGame={() => console.log("Hello")}
+        vote={() => console.log("Hello")}
+        goToCredits={() => console.log("Hello")}
+        resetGame={() => console.log("Hello")}
       />
       {/* <div className="card">
                 <button onClick={() => spawn(account.account)}>Spawn</button>
