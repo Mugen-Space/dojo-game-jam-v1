@@ -10,12 +10,14 @@ import {
   WelcomeMessage,
   InterrogationMessage,
   CooperateMessage,
-  SingleBetrayalMessage,
+  StealerMessage,
+  SplitterMessage,
   BetrayalMessage,
   CreditsMessage,
 } from "./Constants";
 import { GameState } from "./GameStateEnum";
 import { stat } from "fs";
+import { shortString } from "starknet";
 // import gameimage from
 type GameComponentScreenProps = {
   gameId: number;
@@ -105,12 +107,26 @@ function InterrogationComponent(props: {
   console.log(games);
   if (games[0]["choice1"] !== 0 && games[0]["choice2"] !== 0) {
     console.log("results are here for the round");
+    let currentPlayer1Address = `0x${games[0]["player1"].toString(16)}`;
+    let currentPlayer2Address = `0x${games[0]["player2"].toString(16)}`;
+    let currentAccountAddress = account.account.address;
+    let playerNum;
+    if (currentAccountAddress == currentPlayer1Address) playerNum = 1;
+    else if (currentAccountAddress == currentPlayer2Address) playerNum = 2;
     if (games[0]["choice1"] === 1 && games[0]["choice2"] === 1) {
       setGameState(GameState.Cooperate);
     } else if (games[0]["choice1"] === 1 && games[0]["choice2"] === 2) {
-      setGameState(GameState.SingleBetrayal);
+      if (playerNum == 1) {
+        setGameState(GameState.SplitterScreen);
+      } else {
+        setGameState(GameState.StealerScreen);
+      }
     } else if (games[0]["choice1"] === 2 && games[0]["choice2"] === 1) {
-      setGameState(GameState.SingleBetrayal);
+      if (playerNum == 1) {
+        setGameState(GameState.StealerScreen);
+      } else {
+        setGameState(GameState.SplitterScreen);
+      }
     } else {
       setGameState(GameState.Betrayal);
     }
@@ -187,8 +203,12 @@ function GameComponentScreen(props: GameComponentScreenProps) {
         setGameText(BetrayalMessage);
         setGameControls(<GoToCredits goToCredits={props.goToCredits} />);
         break;
-      case GameState.SingleBetrayal:
-        setGameText(SingleBetrayalMessage);
+      case GameState.StealerScreen:
+        setGameText(StealerMessage);
+        setGameControls(<GoToCredits goToCredits={props.goToCredits} />);
+        break;
+      case GameState.SplitterScreen:
+        setGameText(SplitterMessage);
         setGameControls(<GoToCredits goToCredits={props.goToCredits} />);
         break;
       case GameState.Credits:
