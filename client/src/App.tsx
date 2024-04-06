@@ -100,7 +100,12 @@ function App() {
           </p>
         </div>
       </div>
-      <GameComponentScreen gameState={1} />
+      <GameComponentScreen
+        gameState={2}
+        startGame={() => console.log("Hello")}
+        createGame={() => console.log("Hello")}
+        joinGame={() => console.log("Hello")}
+      />
       {/* <div className="card">
                 <button onClick={() => spawn(account.account)}>Spawn</button>
                 <div>
