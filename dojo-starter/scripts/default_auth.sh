@@ -2,7 +2,7 @@
 set -euo pipefail
 pushd $(dirname "$0")/..
 
-export RPC_URL="http://localhost:5050"
+export RPC_URL="https://api.cartridge.gg/x/game-jam/katana"
 
 export WORLD_ADDRESS=$(cat ./manifests/deployments/KATANA.json | jq -r '.world.address')
 
@@ -18,6 +18,8 @@ echo "--------------------------------------------------------------------------
 sozo auth grant --world $WORLD_ADDRESS --wait writer \
   Position,$ACTIONS_ADDRESS \
   Moves,$ACTIONS_ADDRESS \
+  Game,$ACTIONS_ADDRESS \
+  Player,$ACTIONS_ADDRESS \
   >/dev/null
 
 echo "Default authorizations have been successfully set."

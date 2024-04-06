@@ -83,18 +83,18 @@ mod tests {
 
         // call spawn()
         actions_system.create_game();
-        let game_state = get!(world, 1, Game);
+        let game_state = get!(world, 0, Game);
 
         let ideal_caller = starknet::contract_address_const::<0x0>();
 
         // check state
         // println!("Hello, {:?}", game_state.seed);
-        assert(game_state.game_id == 1, 'game_id is wrong');
+        assert(game_state.game_id == 0, 'game_id is wrong');
         assert(game_state.player1 == ideal_caller, 'player1 is wrong');
         assert(game_state.player2 == ideal_caller, 'player2 is wrong');
         assert(game_state.choice1 == 0, 'choice1 is wrong');
         assert(game_state.choice2 == 0, 'choice2 is wrong');
-        assert(game_state.seed == 0, 'seed is wrong');
+        assert(game_state.seed == 1, 'seed is wrong');
     }
 
     #[test]

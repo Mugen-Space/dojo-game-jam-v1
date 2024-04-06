@@ -38,7 +38,7 @@ impl GameImpl of GameTrait {
     fn new(game_id: u32, host: ContractAddress) -> Game {
         assert(!host.is_zero(), errors::GAME_INVALID_HOST);
         let player = starknet::contract_address_const::<0x0>();
-        Game { game_id, player1: player, player2: player, choice1: 0, choice2: 0, seed: 12 }
+        Game { game_id, player1: player, player2: player, choice1: 0, choice2: 0, seed: 1 }
     }
     #[inline(always)]
     fn join(mut game: Game, player: ContractAddress) -> Game {
